@@ -114,21 +114,70 @@ html[data-lang="en"] [lang="mr"]:not([data-set]) { display: none !important; }
 @keyframes scroll-wheel { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(6px); opacity: 0; } }
 @keyframes glow-pulse { 0%,100% { box-shadow: 0 0 20px rgba(201,168,76,.15); } 50% { box-shadow: 0 0 30px rgba(201,168,76,.35), 0 0 60px rgba(201,168,76,.1); } }
 @keyframes card-rise { from { opacity: 0; transform: translateY(40px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes shimmer-sweep { 0% { left: -100%; } 100% { left: 200%; } }
+@keyframes sparkle-pop { 0%,100% { opacity: 0; transform: scale(0) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(180deg); } }
+@keyframes float-orb { 0%,100% { transform: translateY(0) scale(1); opacity: .15; } 50% { transform: translateY(-30px) scale(1.2); opacity: .3; } }
+@keyframes door-left { to { transform: perspective(1200px) rotateY(95deg); } }
+@keyframes door-right { to { transform: perspective(1200px) rotateY(-95deg); } }
+@keyframes gate-burst { 0% { opacity: 0; transform: translate(-50%,-50%) scale(.3); } 40% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(3); } }
+@keyframes mandala-burst { 0% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 10px rgba(201,168,76,.2)); } 30% { transform: scale(1.4); filter: brightness(1.8) drop-shadow(0 0 40px rgba(201,168,76,.6)); } 100% { transform: scale(2.5); opacity: 0; filter: brightness(2) drop-shadow(0 0 60px rgba(201,168,76,.8)); } }
+@keyframes ripple-out { 0% { transform: scale(.5); opacity: .7; border-width: 3px; } 100% { transform: scale(2.5); opacity: 0; border-width: 1px; } }
+@keyframes corner-bloom { from { opacity: 0; transform: scale(0) rotate(-90deg); } to { opacity: 1; transform: scale(1) rotate(0deg); } }
+@keyframes shine-across { 0% { transform: translateX(-100%) skewX(-15deg); } 100% { transform: translateX(300%) skewX(-15deg); } }
+@keyframes section-breathe { 0%,100% { box-shadow: inset 0 0 60px rgba(201,168,76,0); } 50% { box-shadow: inset 0 0 60px rgba(201,168,76,.025); } }
+@keyframes tl-line-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes tl-dot-pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes eq-bar { 0%,100% { height: 3px; } 50% { height: 12px; } }
 
-/* ── Gate: dark geometric opening ── */
+/* ── Gate: split-door opening ── */
 .gate {
   position: fixed; inset: 0; z-index: 50;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: var(--geo), radial-gradient(ellipse at 50% 40%, #2a1a4a 0%, #1a0e2e 50%, #0f0820 100%);
-  transition: opacity .8s ease;
+  background: transparent; perspective: 1200px;
 }
-.gate.gone { opacity: 0; pointer-events: none; }
+.gate.gone { pointer-events: none; visibility: hidden; }
+.gate-door {
+  position: fixed; top: 0; width: 50.5%; height: 100%; z-index: 2;
+  background: var(--geo), radial-gradient(ellipse at 50% 40%, #2a1a4a 0%, #1a0e2e 50%, #0f0820 100%);
+  will-change: transform; backface-visibility: hidden;
+}
+.gate-door--left { left: 0; transform-origin: left center; }
+.gate-door--right { right: 0; transform-origin: right center; }
+.gate-door::after {
+  content: ''; position: absolute; top: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent 60%, rgba(201,168,76,.06));
+}
+.gate-door--left::after { right: 0; }
+.gate-door--right::after { left: 0; background: linear-gradient(-90deg, transparent 60%, rgba(201,168,76,.06)); }
+.gate.opening .gate-door--left { animation: door-left 1.4s cubic-bezier(.65,0,.35,1) .2s forwards; }
+.gate.opening .gate-door--right { animation: door-right 1.4s cubic-bezier(.65,0,.35,1) .2s forwards; }
+.gate-light-burst {
+  position: fixed; left: 50%; top: 50%; width: 400px; height: 400px; z-index: 1;
+  border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, rgba(201,168,76,.6), rgba(201,168,76,.15) 40%, transparent 70%);
+}
+.gate.opening .gate-light-burst { animation: gate-burst 1.6s ease .1s forwards; }
+.gate-ripple {
+  position: fixed; left: 50%; top: 50%; width: 200px; height: 200px; z-index: 1;
+  margin: -100px 0 0 -100px; border-radius: 50%; pointer-events: none;
+  border: 2px solid var(--gold); opacity: 0;
+}
+.gate.opening .gate-ripple { animation: ripple-out 1.2s ease .3s forwards; }
+.gate.opening .gate-ripple:nth-child(2) { animation-delay: .5s; }
+.gate.opening .gate-ripple:nth-child(3) { animation-delay: .7s; }
+.gate-content {
+  position: relative; z-index: 3; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 20px;
+  transition: opacity .3s ease, transform .5s ease;
+}
+.gate.opening .gate-content { opacity: 0; transform: scale(1.15); transition: opacity .4s, transform .6s; }
 .gate-top { font: 600 .7rem/1.5 var(--serif); letter-spacing: .32em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
 .gate-top [lang="mr"] { font: 400 .92rem/1.5 var(--deva); letter-spacing: normal; text-transform: none; }
 
 /* Mandala */
-.mandala { width: clamp(120px, 30vw, 180px); height: auto; margin-bottom: 28px; animation: spin-slow 40s linear infinite; }
+.mandala { width: clamp(120px, 30vw, 180px); height: auto; margin-bottom: 28px; animation: spin-slow 40s linear infinite; filter: drop-shadow(0 0 15px rgba(201,168,76,.15)); }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
+.gate.opening .mandala { animation: mandala-burst 1.3s ease .05s forwards; }
 
 .gate-names { font: 400 clamp(2.8rem, 10vw, 4.2rem)/1.2 var(--script); color: var(--white); text-shadow: 0 2px 20px rgba(201,168,76,.3); }
 .gate-names [lang="mr"] { font: 400 clamp(2.2rem, 8vw, 3.2rem)/1.4 var(--calli); }
@@ -149,16 +198,15 @@ html[data-lang="en"] [lang="mr"]:not([data-set]) { display: none !important; }
   min-height: 50px; padding: .8em 2.2em; border: 1px solid var(--gold);
   border-radius: 999px; background: linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08));
   color: var(--gold-light); font: 600 .76rem/1.2 var(--serif); letter-spacing: .22em; text-transform: uppercase;
-  cursor: pointer; box-shadow: 0 0 24px rgba(201,168,76,.15); transition: transform .15s, background .3s;
+  cursor: pointer; box-shadow: 0 0 24px rgba(201,168,76,.15); transition: transform .25s, background .3s, box-shadow .3s;
+  overflow: hidden; position: relative;
 }
-.gate-btn:hover { background: linear-gradient(135deg, rgba(201,168,76,.35), rgba(201,168,76,.15)); }
+.gate-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); animation: shimmer-sweep 3s ease-in-out infinite; pointer-events: none; }
+.gate-btn:hover { background: linear-gradient(135deg, rgba(201,168,76,.35), rgba(201,168,76,.15)); box-shadow: 0 0 40px rgba(201,168,76,.35); transform: scale(1.05); }
 .gate-btn:active { transform: scale(.97); }
 .gate-btn [lang="mr"] { font-size: 1.32em; }
 .gate-btn::after { content: ''; position: absolute; inset: -7px; border-radius: inherit; border: 1px solid var(--gold-dim); animation: ring 2.4s ease-out infinite; pointer-events: none; }
-.gate.opening { animation: fadeOut 1s ease .5s forwards; }
-.gate.opening .mandala { animation: spin-slow 40s linear infinite, mandala-pulse 1s ease forwards; }
-.gate.opening .gate-names { animation: rise .6s ease .2s both; }
-.gate.opening .gate-btn { opacity: 0; transition: opacity .3s; }
+.gate.opening .gate-btn { opacity: 0; transition: opacity .2s; }
 @keyframes ring { 0% { transform: scale(.96); opacity: .9; } 100% { transform: scale(1.18, 1.45); opacity: 0; } }
 @keyframes fadeOut { to { opacity: 0; } }
 
@@ -251,12 +299,12 @@ html.scrolled .scroll-cue { opacity: 0; }
 .sec > * { max-width: 600px; margin-left: auto; margin-right: auto; }
 .sec-line { display: block; width: 1px; height: 48px; margin: 0 auto 0; background: linear-gradient(var(--gold-dim), transparent); }
 .sec-deco { position: absolute; pointer-events: none; opacity: .12; }
-.sec-deco--left { left: -60px; top: 20%; width: 180px; height: 180px; animation: deco-spin 50s linear infinite, deco-breathe 6s ease-in-out infinite; }
-.sec-deco--right { right: -60px; bottom: 20%; width: 140px; height: 140px; animation: deco-spin 40s linear infinite reverse, deco-breathe 5s ease-in-out infinite 1.5s; }
-.js .reveal { opacity: 0; transform: translateY(32px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
-.js .reveal.in { opacity: 1; transform: none; }
-.js .reveal .stagger { opacity: 0; transform: translateY(30px) scale(.97); }
-.js .reveal.in .stagger { animation: card-rise .8s cubic-bezier(.2,.7,.2,1) both; }
+.sec-deco--left { left: -60px; top: 20%; width: 180px; height: 180px; animation: deco-spin 50s linear infinite, deco-breathe 6s ease-in-out infinite; will-change: transform; }
+.sec-deco--right { right: -60px; bottom: 20%; width: 140px; height: 140px; animation: deco-spin 40s linear infinite reverse, deco-breathe 5s ease-in-out infinite 1.5s; will-change: transform; }
+.js .reveal { opacity: 0; transform: translateY(36px) scale(.98); filter: blur(4px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1), filter .9s ease; }
+.js .reveal.in { opacity: 1; transform: none; filter: none; }
+.js .reveal .stagger { opacity: 0; transform: translateY(30px) scale(.95); filter: blur(3px); }
+.js .reveal.in .stagger { animation: card-rise .8s cubic-bezier(.2,.7,.2,1) both; filter: none; }
 .js .reveal.in .stagger:nth-child(1) { animation-delay: .1s; }
 .js .reveal.in .stagger:nth-child(2) { animation-delay: .25s; }
 .js .reveal.in .stagger:nth-child(3) { animation-delay: .4s; }
@@ -269,10 +317,13 @@ html.scrolled .scroll-cue { opacity: 0; }
   min-height: 46px; padding: .7em 1.35em; border: 1px solid var(--gold);
   border-radius: 999px; background: rgba(201,168,76,.12); color: var(--gold-light);
   font: 600 .76rem/1.2 var(--serif); letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
-  cursor: pointer; box-shadow: 0 0 20px rgba(201,168,76,.08); transition: background .2s, transform .15s;
+  cursor: pointer; box-shadow: 0 0 20px rgba(201,168,76,.08); transition: background .3s, transform .25s, box-shadow .3s;
+  position: relative; overflow: hidden;
 }
-.btn:hover { background: rgba(201,168,76,.22); }
-.btn:active { transform: scale(.97); }
+.btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); transition: none; pointer-events: none; }
+.btn:hover::before { animation: shimmer-sweep .6s ease forwards; }
+.btn:hover { background: rgba(201,168,76,.25); box-shadow: 0 0 30px rgba(201,168,76,.2); transform: translateY(-2px); }
+.btn:active { transform: scale(.97) translateY(0); }
 .btn [lang="mr"] { font-size: 1.3em; }
 .btn.ghost { background: rgba(255,255,255,.06); border-color: var(--line); color: var(--text); box-shadow: none; }
 .btn.ghost:hover { background: rgba(255,255,255,.1); }
@@ -447,10 +498,71 @@ html[data-lang="mr"] .cd-done { font: 400 1.6rem/1.5 var(--calli); }
   .names [lang="mr"] { font-size: 4.4rem; }
   .couple-grid { grid-template-columns: 1fr 1fr; max-width: 580px; }
 }
+/* ── Sparkle layer ── */
+.sparkles { position: fixed; inset: 0; z-index: 19; pointer-events: none; overflow: hidden; }
+.sparkle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--gold-light); box-shadow: 0 0 6px 2px rgba(201,168,76,.4); animation: sparkle-pop linear infinite; }
+
+/* ── Floating orbs ── */
+.orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(40px); animation: float-orb ease-in-out infinite; }
+.hero .orb--1 { width: 200px; height: 200px; top: 20%; left: -60px; background: rgba(107,63,160,.15); animation-duration: 12s; }
+.hero .orb--2 { width: 150px; height: 150px; bottom: 15%; right: -40px; background: rgba(201,168,76,.1); animation-duration: 16s; animation-delay: -4s; }
+.hero .orb--3 { width: 120px; height: 120px; top: 60%; left: 30%; background: rgba(142,106,174,.08); animation-duration: 20s; animation-delay: -8s; }
+
+/* ── Section breathing glow ── */
+.sec { animation: section-breathe 6s ease-in-out infinite; }
+.sec:nth-child(even) { animation-delay: 3s; }
+
+/* ── Enhanced patrika corners ── */
+.js .reveal.in .corner { animation: corner-bloom .6s cubic-bezier(.2,.8,.2,1) both; }
+.js .reveal.in .corner.tl { animation-delay: .2s; }
+.js .reveal.in .corner.tr { animation-delay: .35s; }
+.js .reveal.in .corner.bl { animation-delay: .5s; }
+.js .reveal.in .corner.br { animation-delay: .65s; }
+
+/* ── Patrika shine sweep ── */
+.patrika-card::after { content: ''; position: absolute; top: 0; left: -100%; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(201,168,76,.06), transparent); pointer-events: none; z-index: 1; }
+.js .reveal.in .patrika-card::after { animation: shine-across 2s ease 1s forwards; }
+
+/* ── Timeline enhanced ── */
+.timeline::before { transform-origin: left; }
+.js .reveal.in .timeline::before { animation: tl-line-draw 1.2s cubic-bezier(.4,0,.2,1) .3s both; }
+.js .reveal.in .tl-dot { animation: tl-dot-pop .5s cubic-bezier(.2,.8,.2,1) both; }
+.js .reveal.in .tl-item:nth-child(1) .tl-dot { animation-delay: .5s; }
+.js .reveal.in .tl-item:nth-child(2) .tl-dot { animation-delay: .8s; }
+
+/* ── Image reveal clip ── */
+.js .arch-frame img { clip-path: inset(100% 0 0 0); transition: clip-path 1s cubic-bezier(.4,0,.2,1); }
+.js .reveal.in .arch-frame img { clip-path: inset(0 0 0 0); }
+.js .reveal.in .stagger:nth-child(1) .arch-frame img { transition-delay: .3s; }
+.js .reveal.in .stagger:nth-child(2) .arch-frame img { transition-delay: .5s; }
+
+/* ── Portrait glow on reveal ── */
+.portrait img { transition: opacity 1.6s ease, transform 1.6s ease, box-shadow 1.6s ease, filter 1.6s ease !important; }
+.portrait.in img { box-shadow: 0 0 60px rgba(201,168,76,.25), var(--shadow) !important; }
+
+/* ── Music equalizer bars ── */
+.music .eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.music .eq span { display: block; width: 2px; background: var(--gold); border-radius: 1px; animation: eq-bar ease-in-out infinite; }
+.music.paused .eq span { animation-play-state: paused; height: 3px !important; }
+.music .eq span:nth-child(1) { animation-duration: .45s; }
+.music .eq span:nth-child(2) { animation-duration: .55s; animation-delay: .1s; }
+.music .eq span:nth-child(3) { animation-duration: .35s; animation-delay: .2s; }
+.music .eq span:nth-child(4) { animation-duration: .5s; animation-delay: .05s; }
+
+/* ── Countdown flip enhancement ── */
+.cd div { transition: transform .3s, box-shadow .3s; }
+.cd div:hover { transform: translateY(-4px); box-shadow: 0 0 35px rgba(201,168,76,.3); }
+
+/* ── Calendar day hover ── */
+.day { transition: color .2s, transform .2s; }
+.day:hover { color: var(--gold-soft); transform: scale(1.15); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
   html { scroll-behavior: auto; }
-  .petals, .mandala { display: none; }
+  .petals, .mandala, .sparkles, .orb, .gate-light-burst, .gate-ripple { display: none; }
+  .js .reveal { filter: none !important; }
+  .js .reveal .stagger { filter: none !important; }
 }
 </style>
 </head>
@@ -485,14 +597,22 @@ html[data-lang="mr"] .cd-done { font: 400 1.6rem/1.5 var(--calli); }
   <button type="button" data-set="en" lang="en" aria-pressed="false">English</button>
 </div>
 <button type="button" class="music" id="musicBtn" hidden>
-  <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+  <span class="on eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
   <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9.5l5 5M22 9.5l-5 5"/></svg>
 </button>
 <div class="petals" id="petals" aria-hidden="true"></div>
+<div class="sparkles" id="sparkles" aria-hidden="true"></div>
 <div class="rain" id="rain" aria-hidden="true"></div>
 
-<!-- ── Gate: Dark geometric opener ── -->
+<!-- ── Gate: Split-door opener ── -->
 <div class="gate" id="gate">
+  <div class="gate-door gate-door--left"></div>
+  <div class="gate-door gate-door--right"></div>
+  <div class="gate-light-burst"></div>
+  <div class="gate-ripple"></div>
+  <div class="gate-ripple"></div>
+  <div class="gate-ripple"></div>
+  <div class="gate-content">
   <p class="gate-top"><span lang="mr">शुभविवाह</span><span lang="en">The Wedding Celebration</span></p>
   <!-- Geometric mandala SVG -->
   <svg class="mandala" viewBox="0 0 200 200" aria-hidden="true">
@@ -528,7 +648,8 @@ html[data-lang="mr"] .cd-done { font: 400 1.6rem/1.5 var(--calli); }
   <div class="gate-divider"></div>
   <p class="gate-invite"><span lang="mr">या मंगल प्रसंगी आपण सहकुटुंब उपस्थित राहून नवदांपत्यास शुभाशीर्वाद द्यावेत</span><span lang="en">Together with our families, we joyfully invite you to celebrate our union</span></p>
   <svg class="lotus" aria-hidden="true"><use href="#lotus"/></svg>
-  <button type="button" class="gate-btn" id="openBtn" style="position:relative"><span lang="mr">निमंत्रण उघडा</span><span lang="en">Open Invitation</span></button>
+  <button type="button" class="gate-btn" id="openBtn"><span lang="mr">निमंत्रण उघडा</span><span lang="en">Open Invitation</span></button>
+  </div>
 </div>
 
 <main id="main">
@@ -536,6 +657,9 @@ html[data-lang="mr"] .cd-done { font: 400 1.6rem/1.5 var(--calli); }
   <!-- Hero -->
   <header class="hero" id="hero">
     <div class="hero__jali" aria-hidden="true"></div>
+    <div class="orb orb--1" aria-hidden="true"></div>
+    <div class="orb orb--2" aria-hidden="true"></div>
+    <div class="orb orb--3" aria-hidden="true"></div>
     <svg class="hero__mandala-bg" viewBox="0 0 400 400" aria-hidden="true">
       <circle cx="200" cy="200" r="195" fill="none" stroke="var(--gold)" stroke-width=".3" stroke-opacity=".2"/>
       <circle cx="200" cy="200" r="170" fill="none" stroke="var(--gold)" stroke-width=".4" stroke-opacity=".15"/>
@@ -950,14 +1074,52 @@ html[data-lang="mr"] .cd-done { font: 400 1.6rem/1.5 var(--calli); }
     $('#rule').classList.add('open'); hero.classList.add('done');
   }
 
+  function sparkles() {
+    if (reduce) return;
+    const box = $('#sparkles');
+    function spawn() {
+      const s = document.createElement('i');
+      s.className = 'sparkle';
+      const dur = rand(2, 5), size = rand(2, 5);
+      s.style.cssText = 'left:' + rand(2, 98).toFixed(1) + '%;top:' + rand(5, 95).toFixed(1) + '%;width:' + size.toFixed(0) + 'px;height:' + size.toFixed(0) + 'px;animation-duration:' + dur.toFixed(1) + 's;animation-delay:' + rand(0, 2).toFixed(1) + 's';
+      box.appendChild(s);
+      setTimeout(() => s.remove(), (dur + 2) * 1000);
+    }
+    for (let i = 0; i < 8; i++) spawn();
+    setInterval(() => { if (box.children.length < 15) spawn(); }, 800);
+  }
+
+  // enhanced parallax for sections
+  if (!reduce) {
+    const secs = $$('.sec');
+    let ptick = false;
+    addEventListener('scroll', () => {
+      if (ptick) return; ptick = true;
+      requestAnimationFrame(() => {
+        const sy = scrollY, vh = innerHeight;
+        secs.forEach(sec => {
+          const rect = sec.getBoundingClientRect();
+          if (rect.bottom < -100 || rect.top > vh + 100) return;
+          const progress = (vh - rect.top) / (vh + rect.height);
+          const decos = sec.querySelectorAll('.sec-deco');
+          decos.forEach((d, i) => {
+            const dir = i % 2 ? 1 : -1;
+            d.style.transform = 'translateY(' + (progress * 40 * dir).toFixed(1) + 'px) rotate(' + (progress * 15 * dir).toFixed(1) + 'deg)';
+          });
+        });
+        ptick = false;
+      });
+    }, { passive: true });
+  }
+
   const gate = $('#gate');
   $('#openBtn').addEventListener('click', () => {
-    startMusic(); gate.classList.add('opening'); shower(110);
+    startMusic(); gate.classList.add('opening'); shower(150);
     setTimeout(() => {
       main.inert = false; root.classList.remove('locked'); scrollTo(0, 0);
-      $('#names').focus({ preventScroll: true }); intro(); petals();
-      gate.classList.add('gone'); setTimeout(() => gate.remove(), 900);
-    }, reduce ? 0 : 800);
+      $('#names').focus({ preventScroll: true }); intro(); petals(); sparkles();
+      gate.classList.add('gone'); setTimeout(() => gate.remove(), 600);
+    }, reduce ? 0 : 1200);
   }, { once: true });
 })();
 </script>
